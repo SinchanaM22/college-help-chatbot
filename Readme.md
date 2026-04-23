@@ -168,39 +168,7 @@ UPDATE students SET role='ADMIN' WHERE username='your_username';
 
 After the first admin is created, new admins can be promoted from inside the admin panel without touching MySQL.
 
----
 
-## API Endpoints
-
-### Auth
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | /auth/register | Register new student |
-| POST | /auth/login | Login and get JWT token |
-
-### Chat
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | /chat | Send a message |
-| POST | /chat/feedback | Submit thumbs up/down feedback |
-| POST | /chat/clear | Clear session memory |
-
-### Admin (requires ADMIN role)
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | /admin/faqs | Get all FAQs |
-| POST | /admin/faqs | Add new FAQ |
-| PUT | /admin/faqs/{id} | Update FAQ |
-| DELETE | /admin/faqs/{id} | Delete FAQ |
-| GET | /admin/students | Get all students |
-| PUT | /admin/students/{id}/promote | Promote student to admin |
-| DELETE | /admin/students/{id} | Delete student |
-| GET | /admin/history/top | Top asked questions |
-| GET | /admin/history/feedback | Poorly rated answers |
-| GET | /admin/history/stats | Feedback statistics |
-| DELETE | /admin/history | Clear all chat history |
-
----
 
 ## How It Works
 
@@ -213,8 +181,6 @@ After the first admin is created, new admins can be promoted from inside the adm
 7. The reply is saved to the `chat_history` table with the student's username
 8. Student can give thumbs up or down feedback on each reply
 9. Admin can view FAQ management, student list, and analytics from the admin panel
-
----
 
 ## Dependencies
 
