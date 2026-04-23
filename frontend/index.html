@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Help Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page-bg"><div class="blob blob1"></div><div class="blob blob2"></div></div>
+
+<div class="chat-wrapper">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="header-icon">🎓</div>
+        <div class="header-text">
+            <h1>College Assistant</h1>
+            <span class="status-dot"></span><span class="status-label" id="usernameLabel">Online</span>
+        </div>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="toggleDark()" id="darkBtn">🌙</button>
+            <button class="icon-btn" id="adminBtn" onclick="openAdmin()" style="display:none">⚙️</button>
+            <button class="clear-btn" onclick="clearChat()">↺</button>
+            <button class="clear-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div class="chat-messages" id="chatMessages">
+        <div class="message bot-message">
+            <div class="avatar">🤖</div>
+            <div class="bubble">Hi! 👋 Ask me about <strong>fees, hostel, placement, exams, scholarships</strong>!</div>
+        </div>
+    </div>
+
+    <!-- Typing -->
+    <div class="typing-indicator" id="typingIndicator" style="display:none;">
+        <div class="avatar">🤖</div>
+        <div class="typing-bubble"><span></span><span></span><span></span></div>
+    </div>
+
+    <!-- Suggestions -->
+    <div class="suggestions" id="suggestions">
+        <button onclick="quickAsk('What is the CSE fee?')">CSE Fee</button>
+        <button onclick="quickAsk('Hostel fee details')">Hostel</button>
+        <button onclick="quickAsk('Placement companies')">Placement</button>
+        <button onclick="quickAsk('Exam schedule')">Exams</button>
+        <button onclick="quickAsk('Scholarship details')">Scholarship</button>
+    </div>
+
+    <!-- Input -->
+    <div class="chat-input-area">
+        <button id="micBtn" onclick="toggleVoice()">🎤</button>
+        <input type="text" id="userInput" placeholder="Type or speak your question..."
+            onkeydown="if(event.key==='Enter') sendMessage()" autocomplete="off">
+        <button id="sendBtn" onclick="sendMessage()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </button>
+    </div>
+</div>
+
+<!-- Admin Modal -->
+<div class="modal-overlay" id="adminModal" style="display:none;">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-tabs">
+                <button class="tab-btn active" onclick="switchTab('faqs')">📋 FAQs</button>
+                <button class="tab-btn" onclick="switchTab('students')">👥 Students</button>
+                <button class="tab-btn" onclick="switchTab('history')">📊 History</button>
+            </div>
+            <button class="modal-close" onclick="closeAdmin()">✕</button>
+        </div>
+
+        <!-- FAQs -->
+        <div id="tab-faqs">
+            <div class="admin-form">
+                <input type="text" id="newQuestion" placeholder="Keyword (e.g. cse fee)">
+                <input type="text" id="newAnswer" placeholder="Answer">
+                <button onclick="addFaq()">+ Add</button>
+            </div>
+            <div class="faq-list" id="faqList"><p class="loading-text">Loading...</p></div>
+        </div>
+
+        <!-- Students -->
+        <div id="tab-students" style="display:none;">
+            <div class="faq-list" id="studentList"><p class="loading-text">Loading...</p></div>
+        </div>
+
+        <!-- History -->
+        <div id="tab-history" style="display:none;">
+            <div class="history-toolbar">
+                <span class="history-label">📈 Analytics</span>
+                <button class="btn-danger" onclick="clearHistory()">🗑️ Clear All</button>
+            </div>
+            <div class="faq-list" id="historyList"><p class="loading-text">Loading...</p></div>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

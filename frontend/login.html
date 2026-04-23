@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Chatbot — Login</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #2563eb; --primary-dark: #1d4ed8;
+            --surface: #ffffff; --border: #e2e8f0;
+            --text: #1e293b; --muted: #94a3b8;
+            --input-bg: #f8fafc; --error: #ef4444;
+        }
+        [data-theme="dark"] {
+            --surface: #0f172a; --border: #334155;
+            --text: #e2e8f0; --muted: #64748b;
+            --input-bg: #1e293b;
+        }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .blobs { position: fixed; inset: 0; pointer-events: none; }
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.15; }
+        .blob1 { width:400px; height:400px; background:#3b82f6; top:-80px; left:-80px; }
+        .blob2 { width:350px; height:350px; background:#8b5cf6; bottom:-60px; right:-60px; }
+
+        .card {
+            position: relative; z-index: 1;
+            background: var(--surface); border-radius: 24px;
+            width: 380px; padding: 36px 32px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+        }
+
+        .card-icon { font-size: 40px; text-align: center; margin-bottom: 8px; }
+        .card-title { font-size: 22px; font-weight: 600; color: var(--text); text-align: center; }
+        .card-sub { font-size: 13px; color: var(--muted); text-align: center; margin-bottom: 28px; }
+
+        /* Tabs */
+        .tabs { display: flex; background: var(--input-bg); border-radius: 12px;
+                padding: 4px; margin-bottom: 24px; gap: 4px; }
+        .tab {
+            flex: 1; padding: 8px; border: none; border-radius: 9px;
+            font-size: 13px; font-family: 'DM Sans', sans-serif; font-weight: 500;
+            cursor: pointer; background: none; color: var(--muted); transition: all 0.2s;
+        }
+        .tab.active { background: var(--primary); color: white; }
+
+        .form-group { margin-bottom: 16px; }
+        label { font-size: 13px; font-weight: 500; color: var(--text); display: block; margin-bottom: 6px; }
+        input {
+            width: 100%; padding: 11px 14px; border: 1.5px solid var(--border);
+            border-radius: 12px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+            background: var(--input-bg); color: var(--text); outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.12); }
+
+        .btn-primary {
+            width: 100%; padding: 12px; background: var(--primary); color: white;
+            border: none; border-radius: 12px; font-size: 15px;
+            font-family: 'DM Sans', sans-serif; font-weight: 600;
+            cursor: pointer; transition: background 0.2s, transform 0.15s;
+            margin-top: 4px;
+        }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .error-msg {
+            background: #fee2e2; color: #991b1b; border-radius: 10px;
+            padding: 10px 14px; font-size: 13px; margin-top: 12px; display: none;
+        }
+        .success-msg {
+            background: #d1fae5; color: #065f46; border-radius: 10px;
+            padding: 10px 14px; font-size: 13px; margin-top: 12px; display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="blobs">
+    <div class="blob blob1"></div>
+    <div class="blob blob2"></div>
+</div>
+
+<div class="card">
+    <div class="card-icon">🎓</div>
+    <div class="card-title">College Assistant</div>
+    <div class="card-sub">Sign in to start chatting</div>
+
+    <div class="tabs">
+        <button class="tab active" onclick="switchTab('login')">Login</button>
+        <button class="tab" onclick="switchTab('register')">Register</button>
+    </div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="loginUser" placeholder="Enter username" autocomplete="username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPass" placeholder="Enter password"
+                onkeydown="if(event.key==='Enter') doLogin()">
+        </div>
+        <button class="btn-primary" onclick="doLogin()">Login →</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" style="display:none;">
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="regUser" placeholder="Choose a username">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="regPass" placeholder="Min 6 characters"
+                onkeydown="if(event.key==='Enter') doRegister()">
+        </div>
+        <button class="btn-primary" onclick="doRegister()">Create Account →</button>
+    </div>
+
+    <div class="error-msg"   id="errorMsg"></div>
+    <div class="success-msg" id="successMsg"></div>
+</div>
+
+<script>
+const BASE = "http://localhost:8081";
+
+function switchTab(tab) {
+    document.querySelectorAll(".tab").forEach(b => b.classList.remove("active"));
+    event.target.classList.add("active");
+    document.getElementById("loginForm").style.display    = tab === "login"    ? "block" : "none";
+    document.getElementById("registerForm").style.display = tab === "register" ? "block" : "none";
+    hideMessages();
+}
+
+function showError(msg) {
+    const el = document.getElementById("errorMsg");
+    el.textContent = msg; el.style.display = "block";
+    document.getElementById("successMsg").style.display = "none";
+}
+function showSuccess(msg) {
+    const el = document.getElementById("successMsg");
+    el.textContent = msg; el.style.display = "block";
+    document.getElementById("errorMsg").style.display = "none";
+}
+function hideMessages() {
+    document.getElementById("errorMsg").style.display = "none";
+    document.getElementById("successMsg").style.display = "none";
+}
+
+async function doLogin() {
+    const username = document.getElementById("loginUser").value.trim();
+    const password = document.getElementById("loginPass").value.trim();
+    if (!username || !password) return showError("Please enter username and password.");
+
+    const res  = await fetch(`${BASE}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (data.error) return showError(data.error);
+
+    // Save token and go to chat
+    localStorage.setItem("token",    data.token);
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("role",     data.role);
+    showSuccess("Login successful! Redirecting...");
+    setTimeout(() => window.location.href = "index.html", 800);
+}
+
+async function doRegister() {
+    const username = document.getElementById("regUser").value.trim();
+    const password = document.getElementById("regPass").value.trim();
+    if (!username || !password) return showError("Please fill all fields.");
+
+    const res  = await fetch(`${BASE}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+    });
+    const data = await res.json();
+
+    if (data.error) return showError(data.error);
+
+    localStorage.setItem("token",    data.token);
+    localStorage.setItem("username", data.username);
+    localStorage.setItem("role",     "STUDENT");
+    showSuccess("Account created! Redirecting...");
+    setTimeout(() => window.location.href = "index.html", 800);
+}
+</script>
+</body>
+</html>
